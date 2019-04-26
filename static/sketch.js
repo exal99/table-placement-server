@@ -1,6 +1,7 @@
-const chairSize = 50;
+const chairSize = 100;
+const tableHeight = 100;
 const padding = 5;
-const sencetivity = 0.005;
+const sencetivity = 1.05;
 
 let numChairs = 10;
 
@@ -47,11 +48,11 @@ function makeInputBar() {
 
 
 function getWidth() {
-    return windowWidth;
+    return windowWidth * 1;
 }
 
 function getHeight() {
-    return windowHeight;
+    return windowHeight * 1;
 }
 
 function getCanvasPos() {
@@ -67,7 +68,10 @@ function tableWidth(chairs) {
 function setup() {
     lastPress = createVector(0,0);
     cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
+    cnv.elt.style.width  = "100%";
+    cnv.elt.style.height = "100%";
     const pos = getCanvasPos();
+    print(width);
     cnv.position(pos.x, pos.y);
     translateVector = createVector(0,0);
     currentTranslate = createVector(0,0);
@@ -76,7 +80,7 @@ function setup() {
         
     makeInputBar();
     for (let i = 0; i < numChairs; i++) {
-        chairs.push(new Chair(chairSize, "test"));
+        chairs.push(new Chair(chairSize, "Alexander Simko N16E"));
     }
     updateChairsPos();
     
@@ -96,11 +100,10 @@ function draw() {
 
 function getTableBox() {
     const tWidth = tableWidth(ceil(numChairs/2));
-    const tHeight = 50;
     const tableX = width/2 - tWidth/2;
-    const tableY = height/2 - tHeight/2;
+    const tableY = height/2 - tableHeight/2;
 
-    return {"width": tWidth, "height": tHeight, "x": tableX, "y": tableY};
+    return {"width": tWidth, "height": tableHeight, "x": tableX, "y": tableY};
 }
 
 function updateNumChairs() {
@@ -133,10 +136,8 @@ function updateChairsPos() {
             
 function mouseWheel(event) {
     const mousePos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
-    zoomAmount += -event.delta * sencetivity;
-    if (zoomAmount < 0.7) {
-        zoomAmount = 0.7;
-    }
+    zoomAmount *= (event.delta < 0) ? sencetivity : 1/sencetivity;
+    zoomAmount = max(zoomAmount, 0.5);
     const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
     translateVector.add(p5.Vector.sub(newPos, mousePos));
                             
@@ -167,6 +168,10 @@ function keyPressed() {
 
 function windowResized() {
     resizeCanvas(getWidth(), getHeight());
+    cnv.elt.style.width  = "100%";
+    cnv.elt.style.height = "100%";
     const pos = getCanvasPos();
     cnv.position(pos.x, pos.y);
+
+    updateChairsPos();
 }

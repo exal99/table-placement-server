@@ -8,9 +8,18 @@ class Chair {
     }
 
     draw() {
-        
         rect(this.x, this.y, this.size, this.size);
-        text(this.name, this.x, this.y, this.x + this.size, this.y + this.size);
+        
+        const x = this.x + this.size / 2;
+        const y = this.y + this.size / 2;
+
+        const textBoxPercent = 0.9;
+        
+        rectMode(CENTER);
+        textAlign(CENTER, CENTER);
+        textSize(18);
+        text(this.name, x, y, this.size * textBoxPercent, this.size * textBoxPercent);
+        rectMode(CORNER);
     }
 
     updateName(newName) {
