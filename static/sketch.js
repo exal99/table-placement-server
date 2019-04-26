@@ -11,38 +11,53 @@ let currentTranslate;
 let zoomLocation;
 let zoomAmount = 1.0;
 
-let sock;
+let chairs = [];
 
-let chairsInput;
+let cnv;
 
 function makeInputBar() {
-    //textAlign(CENTER);
-    let numChairsText = createElement('h2', 'Number of chairs');
-    numChairsText.position(width/2, numChairsText.height + 30);
-        
-    chairsInput = createInput();
-    chairsInput.position(width/2, 2*(numChairsText.height + 30));
-    chairsInput.value(numChairs);
-                
-                
-    let button = createButton('summit');
-    button.position(chairsInput.x + chairsInput.widht,2*(numChairsText.height + 30));
-        
-    print(chairsInput.x + " " + chairsInput.width);
-        
-    button.mousePressed( () => {
-        numChairs = parseInt(chairsInput.value());
+
+    const div1 = createDiv('Number of chairs:').parent("menu_bar").addClass("menu_item");
+    const div2 = createDiv('Prodject name:').parent("menu_bar").addClass("menu_item");
+
+    const button = createButton("Update prodject");
+    button.elt.addEventListener('click', (event) => {
+            const val = parseInt(document.getElementById('n-chairs').value);
+            if (!isNaN(val)) {
+                numChairs = val;
+                updateNumChairs();
+            }
     });
-    
+
+    createInput().parent(div2).value('test').id('p-name').elt.addEventListener("keyup", (event) => {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            button.elt.click();
+        }
+    });
+    button.parent(div2);
+
+    createInput().parent(div1).value(numChairs).id('n-chairs').elt.addEventListener("keyup", (event) => {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            button.elt.click();
+        }
+    });    
 }
 
 
 function getWidth() {
-    return windowWidth * 0.8;
+    return windowWidth;
 }
 
 function getHeight() {
-    return windowHeight * 0.8;
+    return windowHeight;
+}
+
+function getCanvasPos() {
+    x = (windowWidth - width) / 2;
+    y = (windowHeight - height) / 2;
+    return {'x': x, 'y': y};
 }
 
 function tableWidth(chairs) {
@@ -51,22 +66,20 @@ function tableWidth(chairs) {
     
 function setup() {
     lastPress = createVector(0,0);
-    createCanvas(getWidth(), getHeight());
+    cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
+    const pos = getCanvasPos();
+    cnv.position(pos.x, pos.y);
     translateVector = createVector(0,0);
     currentTranslate = createVector(0,0);
         
     zoomLocation = createVector(0,0);
-            
-    sock = new WebSocket("ws://localhost:1234/chat");
-    sock.onopen = function (event) {
-        sock.send("Hello");
-    }
-    
-    sock.onmessage = function (event) {
-        print(event.data);
-    }
         
     makeInputBar();
+    for (let i = 0; i < numChairs; i++) {
+        chairs.push(new Chair(chairSize, "test"));
+    }
+    updateChairsPos();
+    
 }
     
 function draw() {
@@ -74,26 +87,47 @@ function draw() {
     scale(zoomAmount);
     translate(translateVector.x + currentTranslate.x, translateVector.y + currentTranslate.y);
             
-    drawTable();
+    chairs.forEach((chair) => {
+        chair.draw();
+    });
+    const tBox = getTableBox();
+    rect(tBox.x, tBox.y, tBox.width, tBox.height);
 }
 
-function drawTable() {
+function getTableBox() {
     const tWidth = tableWidth(ceil(numChairs/2));
     const tHeight = 50;
     const tableX = width/2 - tWidth/2;
     const tableY = height/2 - tHeight/2;
-    
-    rect(tableX, tableY, tWidth, tHeight);
-    
-    let drawn = 0;
-        
-    for (let x = tableX + padding; x < tableX + tWidth; x += padding + chairSize) {
-        rect(x, tableY - padding - chairSize, chairSize, chairSize);
-        drawn++;
-        if (drawn < numChairs) {
-            rect(x, tableY + padding + tHeight, chairSize, chairSize);
-            drawn++;
+
+    return {"width": tWidth, "height": tHeight, "x": tableX, "y": tableY};
+}
+
+function updateNumChairs() {
+    const toAdd = numChairs - chairs.length;
+
+    if (toAdd < 0) {
+        chairs.splice(chairs.length + toAdd);
+    } else {
+        for (let i = 0; i < toAdd; i++) {
+            chairs.push(new Chair(chairSize));
         }
+    }
+
+    updateChairsPos();
+}
+
+function updateChairsPos() {
+
+    let top = true;
+
+    const tableBox = getTableBox();
+        
+    //for (let x = tableX + padding; x < tableX + tWidth; x += padding + chairSize) {
+    for (let i = 0; i < chairs.length; i++) {
+        const x = tableBox.x + padding + Math.floor(i/2) * (padding + chairSize); 
+        chairs[i].updatePos(x, (top) ? tableBox.y - padding - chairSize : tableBox.y + padding + tableBox.height);
+        top = !top;
     }        
 }
             
@@ -133,4 +167,6 @@ function keyPressed() {
 
 function windowResized() {
     resizeCanvas(getWidth(), getHeight());
+    const pos = getCanvasPos();
+    cnv.position(pos.x, pos.y);
 }
