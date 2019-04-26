@@ -1,12 +1,35 @@
-html, body {
-    height: 100%;
+body {
+    text-align: center;
 }
 
-body {
-    margin: 0;
-    display: flex;
+#menu_bar {
+    width: 90%;
+    height: 10%;
+    margin: auto;
+    text-align: center;
+    /*border: 3px solid black;*/
+}
 
-    justify-content: center;
+input {
+    margin: 0px 5px;
+}
 
-    align-items: center;
+#n-chairs {
+    width: 40px;
+}
+#p-name {
+    width: 90px;
+}
+
+.menu_item {
+    margin: auto;
+    width: 50%;
+    height: 100%;
+    float: left;
+    display: inline-block;
+    /*border: 3px solid black;*/
+}
+
+canvas {
+    z-index: -1;
 }
