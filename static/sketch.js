@@ -16,6 +16,8 @@ let chairs = [];
 
 let cnv;
 
+let confirmWindow = null;
+
 function makeInputBar() {
 
     const div1 = createDiv('Number of chairs:').parent("menu_bar").addClass("menu_item");
@@ -88,6 +90,7 @@ function setup() {
     
 function draw() {
     background(49,193,198);
+    push();
     scale(zoomAmount);
     translate(translateVector.x + currentTranslate.x, translateVector.y + currentTranslate.y);
             
@@ -96,6 +99,13 @@ function draw() {
     });
     const tBox = getTableBox();
     rect(tBox.x, tBox.y, tBox.width, tBox.height);
+    pop();
+    
+    if (confirmWindow !== null) {
+       
+        confirmWindow.draw();
+        
+    }
 }
 
 function getTableBox() {
@@ -125,8 +135,7 @@ function updateChairsPos() {
     let top = true;
 
     const tableBox = getTableBox();
-        
-    //for (let x = tableX + padding; x < tableX + tWidth; x += padding + chairSize) {
+    
     for (let i = 0; i < chairs.length; i++) {
         const x = tableBox.x + padding + Math.floor(i/2) * (padding + chairSize); 
         chairs[i].updatePos(x, (top) ? tableBox.y - padding - chairSize : tableBox.y + padding + tableBox.height);
@@ -140,8 +149,6 @@ function mouseWheel(event) {
     zoomAmount = max(zoomAmount, 0.5);
     const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
     translateVector.add(p5.Vector.sub(newPos, mousePos));
-                            
-                            
 }
                         
 function mouseReleased() {
