@@ -201,8 +201,8 @@ function mouseClicked() {
 
 function getTableBox() {
     const tWidth = tableWidth(ceil(numChairs/2));
-    const tableX = width/2 - tWidth/2;
-    const tableY = height/2 - tableHeight/2;
+    const tableX = 1/0.7*width/2 - tWidth/2;
+    const tableY = 1/0.7*height/2 - tableHeight/2;
 
     return {"width": tWidth, "height": tableHeight, "x": tableX, "y": tableY};
 }
