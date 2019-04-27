@@ -12,9 +12,22 @@ html, body {
 
 .spacer {
     height: 10px;
-    
     margin: 0px auto;
     
+}
+
+#confirm {
+    position: absolute;
+    margin: auto;
+    border: 3px solid tomato;
+    border-radius: 16px;
+    width: 40%;
+    height: 90px;
+    background: rgb(66,241,244);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 #menu_bar {
