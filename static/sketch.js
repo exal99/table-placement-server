@@ -132,7 +132,7 @@ function setup() {
         updateChairsPos();
     }
     
-    socket = io.connect('http://' + document.domain + ":" + location.port);
+    socket = io.connect(location.protocol + '//' + document.domain + ":" + location.port);
     
     socket.on('acc', (acc) => {
         print(acc);

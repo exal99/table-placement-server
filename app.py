@@ -11,7 +11,7 @@ REDIS_URL = os.environ['REDIS_URL']
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-redis = redis.from_url(REDIS_URL)
+redis = redis.from_url(os.environ.get("REDIS_URL"))
 
 EMPTY_PROJECT = {
     'numChairs': 10,
