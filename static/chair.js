@@ -4,10 +4,20 @@ class Chair {
         this.y = 0;
         this.size = size;
         this.selected = false;
+        this.mouseOver = false;
         this.name = (name === undefined) ? '' : name;
     }
 
     draw() {
+        push();
+        strokeWeight(3);
+        if (this.selected) {
+            stroke(244, 170, 66);
+        } else if (this.mouseOver){
+            stroke(252, 210, 151);
+        } else {
+            stroke(0);
+        }
         rect(this.x, this.y, this.size, this.size);
         
         const x = this.x + this.size / 2;
@@ -18,12 +28,10 @@ class Chair {
         rectMode(CENTER);
         textAlign(CENTER, CENTER);
         textSize(18);
+        strokeWeight(0);
         text(this.name, x, y, this.size * textBoxPercent, this.size * textBoxPercent);
         rectMode(CORNER);
-    }
-
-    updateName(newName) {
-        this.name = name;
+        pop();
     }
 
     updatePos(newX, newY) {
@@ -31,9 +39,11 @@ class Chair {
         this.y = newY;
     }
 
-    isInside(mouseX, mouseY) {
-        return this.x < mouseX && mouseX < this.x + this.size &&
-               this.y < mouseY && mouseY < this.y + this.size;
+    isInside(pos) {
+        const x = pos.x;
+        const y = pos.y;
+        return this.x < x && x < this.x + this.size &&
+               this.y < y && y < this.y + this.size;
     }
 
     toJSON() {

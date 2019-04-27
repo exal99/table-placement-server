@@ -13,6 +13,9 @@ let zoomLocation;
 let zoomAmount = 1.0;
 
 let chairs = [];
+let selectedChair = null;
+
+let backspacePressedTime = 0;
 
 let cnv;
 
@@ -82,7 +85,8 @@ function setup() {
         chairs.push(new Chair(chairSize, "Alexander Simko N16E"));
     }
     updateChairsPos();
-    
+
+    frameRate(60);
 }
     
 function draw() {
@@ -92,12 +96,33 @@ function draw() {
     translate(translateVector.x + currentTranslate.x, translateVector.y + currentTranslate.y);
             
     chairs.forEach((chair) => {
+        if (chair.isInside(getAcctualMousePos())) {
+            chair.mouseOver = true;
+        } else {
+            chair.mouseOver = false;
+        }
         chair.draw();
     });
     const tBox = getTableBox();
     rect(tBox.x, tBox.y, tBox.width, tBox.height);
     pop();
+
+    if (keyIsDown(BACKSPACE) && millis() - backspacePressedTime > 400 && selectedChair !== null) {
+        selectedChair.name = selectedChair.name.slice(0, selectedChair.name.length - 1);
+    }
     
+}
+
+function mouseClicked() {
+    chairs.forEach((chair) => {
+        if (chair.isInside(getAcctualMousePos())) {
+            chair.selected = true;
+            selectedChair = chair;
+        } else {
+            selectedChair = (chair === selectedChair) ? null : selectedChair;
+            chair.selected = false;
+        }
+    });
 }
 
 function getTableBox() {
@@ -123,20 +148,23 @@ function updateNumChairs() {
 }
 
 function updateChairsPos() {
-
     let top = true;
 
     const tableBox = getTableBox();
     
     for (let i = 0; i < chairs.length; i++) {
-        const x = tableBox.x + padding + Math.floor(i/2) * (padding + chairSize); 
+        const x = tableBox.x + padding + Math.floor(i/2) * (padding + chairSize);
         chairs[i].updatePos(x, (top) ? tableBox.y - padding - chairSize : tableBox.y + padding + tableBox.height);
         top = !top;
     }        
 }
+
+function getAcctualMousePos() {
+    return createVector(mouseX, mouseY).mult(1/zoomAmount).sub(p5.Vector.add(translateVector, currentTranslate));
+}
             
 function mouseWheel(event) {
-    const mousePos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
+    const mousePos = getAcctualMousePos();
     zoomAmount *= (event.delta < 0) ? sencetivity : 1/sencetivity;
     zoomAmount = max(zoomAmount, 0.5);
     const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
@@ -155,14 +183,24 @@ function mouseDragged() {
                                 
 function mousePressed() {
     lastPress = createVector(mouseX, mouseY);
-    
 }
     
 function keyPressed() {
-    if (key == 'R') {
-        translateVector.x = 0;
-        translateVector.y = 0;
-        zoomAmount = 1;
+    if (selectedChair !== null) {
+        if (keyCode === BACKSPACE) {
+            selectedChair.name = selectedChair.name.slice(0, selectedChair.name.length - 1);
+            backspacePressedTime = millis();
+        }
+        
+        if (keyCode === DELETE) {
+            selectedChair.name = "";
+        }
+    }
+}
+
+function keyTyped() {
+    if (selectedChair !== null) {
+        selectedChair.name += key;
     }
 }
 
@@ -174,7 +212,6 @@ function windowResized() {
     cnv.position(pos.x, pos.y);
 
     updateChairsPos();
-    
 }
 
 function showConfirmBox(text, callback) {
@@ -212,5 +249,4 @@ function showConfirmBox(text, callback) {
     buttons[1].addEventListener('click', cancelEventListener);
     document.body.addEventListener('click', cancelEventListener);
     window.addEventListener('click', windowClick);
-    
 }
