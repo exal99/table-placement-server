@@ -20,33 +20,29 @@ let backspacePressedTime = 0;
 let cnv;
 
 function makeInputBar() {
-
-    const div1 = createDiv('Number of chairs:').parent("menu_bar").addClass("menu_item");
-    const div2 = createDiv('Prodject name:').parent("menu_bar").addClass("menu_item");
-
-    const button = createButton("Update prodject");
-    button.elt.addEventListener('click', (event) => {
+    const button = document.getElementById('update');
+    button.addEventListener('click', (event) => {
             const val = parseInt(document.getElementById('n-chairs').value);
             if (!isNaN(val)) {
                 numChairs = val;
                 updateNumChairs();
+                window.history.pushState("Something", "", "/project/" + document.getElementById('p-name').value)
             }
     });
 
-    createInput().parent(div2).value('test').id('p-name').elt.addEventListener("keyup", (event) => {
+    document.getElementById('p-name').addEventListener("keyup", (event) => {
         if (event.keyCode == 13) {
             event.preventDefault();
-            button.elt.click();
+            button.click();
         }
     });
-    button.parent(div2);
-
-    createInput().parent(div1).value(numChairs).id('n-chairs').elt.addEventListener("keyup", (event) => {
+    document.getElementById('n-chairs').value = numChairs;
+    document.getElementById('n-chairs').addEventListener("keyup", (event) => {
         if (event.keyCode == 13) {
             event.preventDefault();
-            button.elt.click();
+            button.click();
         }
-    });    
+    });  
 }
 
 

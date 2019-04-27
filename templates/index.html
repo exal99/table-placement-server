@@ -12,7 +12,14 @@
     </head>
     <body>
         <div class="background spacer"></div>
-        <div id="menu_bar" class="background"></div>
+        <div id="menu_bar" class="background">
+            <div class="menu_item">Number of chairs: <input type="text" id="n-chairs">
+            </div>
+            <div class="menu_item">Project name: <input type="text" id="p-name"
+            {% if project_name %} value= {{project_name}} > {% else %} > {% endif %}
+            <button id="update">Update project</button>
+            </div>
+        </div>
         <div id="confirm">
             <div id="confirm-text"><p>Hello</p></div>
             <div id="confirm-button">
