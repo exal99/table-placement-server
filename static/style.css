@@ -28,7 +28,9 @@ html, body {
     left: 0;
     right: 0;
     bottom: 0;
+    display: none;
 }
+
 
 #menu_bar {
     height: 33px;

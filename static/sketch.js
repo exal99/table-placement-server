@@ -16,8 +16,6 @@ let chairs = [];
 
 let cnv;
 
-let confirmWindow = null;
-
 function makeInputBar() {
 
     const div1 = createDiv('Number of chairs:').parent("menu_bar").addClass("menu_item");
@@ -73,7 +71,6 @@ function setup() {
     cnv.elt.style.width  = "100%";
     cnv.elt.style.height = "100%";
     const pos = getCanvasPos();
-    print(width);
     cnv.position(pos.x, pos.y);
     translateVector = createVector(0,0);
     currentTranslate = createVector(0,0);
@@ -101,11 +98,6 @@ function draw() {
     rect(tBox.x, tBox.y, tBox.width, tBox.height);
     pop();
     
-    if (confirmWindow !== null) {
-       
-        confirmWindow.draw();
-        
-    }
 }
 
 function getTableBox() {
@@ -163,6 +155,7 @@ function mouseDragged() {
                                 
 function mousePressed() {
     lastPress = createVector(mouseX, mouseY);
+    
 }
     
 function keyPressed() {
@@ -181,4 +174,43 @@ function windowResized() {
     cnv.position(pos.x, pos.y);
 
     updateChairsPos();
+    
+}
+
+function showConfirmBox(text, callback) {
+    const window = document.getElementById("confirm");
+    window.style.display = "block";
+    document.getElementById("confirm-text").innerHTML = `<p>${text}</p>`;
+    const buttons = document.getElementById("confirm-button").children;
+
+    let okEventListener, cancelEventListener, windowClick;
+
+    let cleanUp = () => {
+        window.style.display = "none";
+        buttons[0].removeEventListener('click', okEventListener);
+        buttons[1].removeEventListener('click', cancelEventListener);
+        document.body.removeEventListener('click', cancelEventListener);
+        window.removeEventListener('click', windowClick);
+    }
+
+    okEventListener = (event) => {
+        callback(true);
+        cleanUp();
+        
+    };
+
+    cancelEventListener = (event) => {
+        callback(false);
+        cleanUp();
+    };
+
+    windowClick = (event) => {
+        event.stopPropagation();
+    };
+    
+    buttons[0].addEventListener('click', okEventListener);
+    buttons[1].addEventListener('click', cancelEventListener);
+    document.body.addEventListener('click', cancelEventListener);
+    window.addEventListener('click', windowClick);
+    
 }
