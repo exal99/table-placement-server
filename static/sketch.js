@@ -1,6 +1,6 @@
-const chairSize = 100;
-const tableHeight = 100;
-const padding = 5;
+const chairSize = 150;
+const tableHeight = 130;
+const padding = 10;
 const sencetivity = 1.05;
 
 let numChairs = 10;
@@ -10,7 +10,7 @@ let translateVector;
 let currentTranslate;
 
 let zoomLocation;
-let zoomAmount = 1.0;
+let zoomAmount = 0.7;
 
 let chairs = [];
 let selectedChair = null;
@@ -19,15 +19,32 @@ let backspacePressedTime = 0;
 
 let cnv;
 
+let socket;
+let projectName = null;
+
+let uuid;
+
 function makeInputBar() {
     const button = document.getElementById('update');
     button.addEventListener('click', (event) => {
-            const val = parseInt(document.getElementById('n-chairs').value);
-            if (!isNaN(val)) {
-                numChairs = val;
-                updateNumChairs();
-                window.history.pushState("Something", "", "/project/" + document.getElementById('p-name').value)
-            }
+        const val = parseInt(document.getElementById('n-chairs').value);
+        if (!isNaN(val)) {
+            numChairs = val;
+            updateNumChairs();
+            updateProject();
+        }
+        
+        const newName = document.getElementById('p-name').value;
+        if (newName !== "") {
+            leaveProject();
+            window.history.pushState("Something", "", "/project/" + newName);
+            projectName = newName;
+            joinProject();
+        } else {
+            leaveProject();
+            window.history.pushState("Something", "", "/");
+            projectName = null;
+        }   
     });
 
     document.getElementById('p-name').addEventListener("keyup", (event) => {
@@ -63,6 +80,32 @@ function getCanvasPos() {
 function tableWidth(chairs) {
     return chairs * chairSize + padding * (chairs + 1);
 }
+
+function getData() {
+    return {
+        project:projectName,
+        data: {
+            uuid: uuid,
+            numChairs: numChairs,
+            chairs: chairs
+        }
+    };
+}
+
+function joinProject() {
+    socket.emit('join', {project: projectName});
+}
+
+function updateProject() {
+    if (projectName !== null) {
+        socket.emit('update', getData());
+    }
+}
+
+function leaveProject() {
+    if (projectName !== null)
+        socket.emit('leave', {project: projectName});
+}
     
 function setup() {
     lastPress = createVector(0,0);
@@ -77,12 +120,46 @@ function setup() {
     zoomLocation = createVector(0,0);
         
     makeInputBar();
-    for (let i = 0; i < numChairs; i++) {
-        chairs.push(new Chair(chairSize, "Alexander Simko N16E"));
-    }
-    updateChairsPos();
+    
 
     frameRate(60);
+    if (location.pathname.startsWith("/project/")) {
+        projectName = location.pathname.slice(9);
+    } else {
+        for (let i = 0; i < numChairs; i++) {
+            chairs.push(new Chair(chairSize, ""));
+        }
+        updateChairsPos();
+    }
+    
+    socket = io.connect('http://' + document.domain + ":" + location.port);
+    
+    socket.on('acc', (acc) => {
+        print(acc);
+    });
+
+    socket.on('update', (data) => {
+        if (data['uuid'] !== uuid) {
+            numChairs = data['numChairs'];
+            document.getElementById('n-chairs').value = data['numChairs'];
+            updateNumChairs();
+            for (let i = 0; i < numChairs; i++) {
+                chairs[i].name = data['chairs'][i];
+            }
+        }
+    });
+
+    socket.on('connected', (server_uuid) => {
+        uuid = server_uuid;
+        print(uuid);
+    });
+
+    socket.on('connect', () => {
+        print("connected");
+        if (location.pathname.startsWith("/project/") && location.pathname.length > 9) {
+            joinProject();
+        }
+    });
 }
     
 function draw() {
@@ -105,6 +182,7 @@ function draw() {
 
     if (keyIsDown(BACKSPACE) && millis() - backspacePressedTime > 400 && selectedChair !== null) {
         selectedChair.name = selectedChair.name.slice(0, selectedChair.name.length - 1);
+        updateProject();
     }
     
 }
@@ -162,7 +240,7 @@ function getAcctualMousePos() {
 function mouseWheel(event) {
     const mousePos = getAcctualMousePos();
     zoomAmount *= (event.delta < 0) ? sencetivity : 1/sencetivity;
-    zoomAmount = max(zoomAmount, 0.5);
+    zoomAmount = max(zoomAmount, 0.3);
     const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
     translateVector.add(p5.Vector.sub(newPos, mousePos));
 }
@@ -186,10 +264,12 @@ function keyPressed() {
         if (keyCode === BACKSPACE) {
             selectedChair.name = selectedChair.name.slice(0, selectedChair.name.length - 1);
             backspacePressedTime = millis();
+            updateProject();
         }
         
         if (keyCode === DELETE) {
             selectedChair.name = "";
+            updateProject();
         }
     }
 }
@@ -197,6 +277,7 @@ function keyPressed() {
 function keyTyped() {
     if (selectedChair !== null) {
         selectedChair.name += key;
+        updateProject();
     }
 }
 
