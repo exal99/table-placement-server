@@ -10,11 +10,10 @@ html, body {
     width: 100%;
     height: 100%;
     margin:0;
-    
 }
 
 .background {
-    background: #00a8ff;
+    background: #0097e6;
     width: 100%;
 }
 
@@ -79,12 +78,20 @@ html, body {
 
 .menu_item button {
     float: left;
-    background-color: #273c75;
+    background-color: #192a56;
     color: #ffffff;
     border: 0;
     border-radius: 10px;
     padding: 4px 6px;
     font-size: 16px;
+}
+
+.menu_item button:hover {
+    background-color: #273c75;
+}
+
+.menu_item button:focus {
+    background-color: #40739e;
 }
 
 .menu_item {

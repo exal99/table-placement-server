@@ -1,7 +1,17 @@
 const chairSize = 150;
 const tableHeight = 130;
-const padding = 10;
+const padding = 20;
 const sencetivity = 1.05;
+
+const BACKGROUND_COLOR = '#00a8ff'
+const TABLE_COLOR = '#dcdde1'
+
+const CHAIR_COLOR = '#353b48';
+const CHAIR_HIGHLIGHT = '#718093';
+const CHAIR_SELECTED = '#7f8fa6';
+const CHAIR_BORDER = '#7f7fa6';
+const CHAIR_BORDER_HIGHLIGHT = '#e1b12c';
+const CHAIR_BORDER_SELECTED = '#fbc531';
 
 let numChairs = 10;
 
@@ -114,6 +124,7 @@ function leaveProject() {
 }
     
 function setup() {
+    textFont('Work Sans');
     lastPress = createVector(0,0);
     cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
     cnv.elt.style.width  = "100%";
@@ -145,8 +156,6 @@ function setup() {
     });
 
     socket.on('update', (data) => {
-        print("update");
-        print(data);
         if (data['uuid'] !== uuid) {
             numChairs = data['numChairs'];
             document.getElementById('n-chairs').value = data['numChairs'];
@@ -169,7 +178,7 @@ function setup() {
 }
     
 function draw() {
-    background(49,193,198);
+    background(color('#00a8ff'));
     push();
     scale(zoomAmount);
     translate(translateVector.x + currentTranslate.x, translateVector.y + currentTranslate.y);
@@ -183,6 +192,8 @@ function draw() {
         chair.draw();
     });
     const tBox = getTableBox();
+    strokeWeight(5);
+    fill(TABLE_COLOR);
     rect(tBox.x, tBox.y, tBox.width, tBox.height);
     pop();
 

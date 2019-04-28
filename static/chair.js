@@ -10,13 +10,19 @@ class Chair {
 
     draw() {
         push();
-        strokeWeight(3);
+        strokeWeight(5);
         if (this.selected) {
-            stroke(244, 170, 66);
+            //stroke(244, 170, 66);
+            stroke(color(CHAIR_BORDER_SELECTED));
+            fill(color(CHAIR_SELECTED));
         } else if (this.mouseOver){
-            stroke(252, 210, 151);
+            //stroke(252, 210, 151);
+            stroke(color(CHAIR_BORDER_HIGHLIGHT));
+            fill(color(CHAIR_HIGHLIGHT));
         } else {
-            stroke(0);
+            //stroke(0);
+            stroke(color(CHAIR_BORDER));
+            fill(color(CHAIR_COLOR));
         }
         rect(this.x, this.y, this.size, this.size);
         
@@ -27,6 +33,7 @@ class Chair {
         
         rectMode(CENTER);
         textAlign(CENTER, CENTER);
+        fill(255);
         textSize(18);
         strokeWeight(0);
         text(this.name, x, y, this.size * textBoxPercent, this.size * textBoxPercent);
