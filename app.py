@@ -29,7 +29,7 @@ def set_val(key, value):
 @app.route('/')
 @app.route('/project/<project_name>')
 def index(project_name=None):
-    return render_template('index.html', project_name=unquote(project_name))
+    return render_template('index.html', project_name=(unquote(project_name) if project_name else None))
 
 @socketio.on('connect')
 def on_connect():
