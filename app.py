@@ -43,7 +43,7 @@ def on_join_project(data):
     project = data['project']
     join_room(project)
     emit('acc', data)
-    emit('update', get_val(project))
+    emit('update', {'uuid': 'server', **get_val(project)})
 
 @socketio.on('leave')
 def on_leave_project(data):
@@ -54,7 +54,11 @@ def on_leave_project(data):
 @socketio.on('update')
 def on_update_project(data):
     set_val(data['project'], data['data'])
-    emit('update', data['data'], room=data['project'])
+    to_return = {
+        'uuid': data['uuid'],
+        **data['data']
+    }
+    emit('update', to_return, room=data['project'])
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

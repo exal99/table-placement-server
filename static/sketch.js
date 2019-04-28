@@ -28,7 +28,6 @@ let uuid;
 function makeInputBar() {
     const button = document.getElementById('update');
     button.addEventListener('click', (event) => {
-        print("pressed");
         const val = parseInt(document.getElementById('n-chairs').value);
         //const val = parseInt(tempInfo[0]);
         if (!isNaN(val)) {
@@ -91,8 +90,8 @@ function tableWidth(chairs) {
 function getData() {
     return {
         project:projectName,
+        uuid: uuid,
         data: {
-            uuid: uuid,
             numChairs: numChairs,
             chairs: chairs
         }
@@ -146,6 +145,8 @@ function setup() {
     });
 
     socket.on('update', (data) => {
+        print("update");
+        print(data);
         if (data['uuid'] !== uuid) {
             numChairs = data['numChairs'];
             document.getElementById('n-chairs').value = data['numChairs'];
@@ -158,11 +159,9 @@ function setup() {
 
     socket.on('connected', (server_uuid) => {
         uuid = server_uuid;
-        print(uuid);
     });
 
     socket.on('connect', () => {
-        print("connected");
         if (location.pathname.startsWith("/project/") && location.pathname.length > 9) {
             joinProject();
         }
@@ -204,8 +203,6 @@ function mouseClicked() {
             chair.selected = false;
         }
     });
-    print("mouse");
-    print("mouse2");
     document.getElementById('n-chairs').value = numChairs;
     document.getElementById('p-name').value = projectName;
 }
