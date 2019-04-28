@@ -52,6 +52,7 @@ html, body {
     float: left;
     margin: auto 0px;
     font-size: 20px;
+    user-select: none;
 }
 
 .menu_item input {
@@ -84,13 +85,23 @@ html, body {
     border-radius: 10px;
     padding: 4px 6px;
     font-size: 16px;
+    user-select: none;
+}
+
+.menu_item button i {
+    margin-left: 10px;
+    transition: 400ms;
 }
 
 .menu_item button:hover {
     background-color: #273c75;
 }
 
-.menu_item button:focus {
+.menu_item button:hover i {
+    transform: rotate(180deg);
+}
+
+.menu_item button:active {
     background-color: #40739e;
 }
 
@@ -101,6 +112,13 @@ html, body {
     justify-content: center;
     align-items: center;
     margin: 0 3%;
+}
+
+#sketch-holder {
+    width:100%;
+    height:100%;
+    position: relative;
+    flex-grow: 1;
 }
 
 

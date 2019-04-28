@@ -265,11 +265,13 @@ function mouseReleased() {
 }
 
 function mouseDragged() {
-    currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
+    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height)
+        currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
 }
                                 
-function mousePressed(event) {
-    lastPress = createVector(mouseX, mouseY);
+function mousePressed() {
+    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height)
+        lastPress = createVector(mouseX, mouseY);
 }
     
 function keyPressed() {

@@ -33,6 +33,7 @@
         <script src="/static/chair.js"></script>
     </head>
     <body>
+        <div style="height: 100%; width:100%; display: flex; flex-flow: column;">
         <div id="menu_bar" class="background">
             <div id="left-item" class="menu_item">
                 <input type="text" id="p-name" placeholder="Project Name"
@@ -43,12 +44,10 @@
                 {% endif %}
                 
             </div>
-            <div id="right-item" class="menu_item">
-                <!--<p>Project name:</p>-->
-                
+            <div id="right-item" class="menu_item">                
                 <p>Number of chairs:</p>
                 <input type="text" id="n-chairs">
-                <button id="update">Update Project <i class="fas fa-sync"></i></button>
+                <button id="update">Update Project<i class="fas fa-sync"></i></button>
             </div>
         </div>
         <div id="confirm">
@@ -58,6 +57,7 @@
                 <button type="button"> Cancel </button>
             </div>
         </div>
-        <div id="sketch-holder"> </div>
+        <div id="sketch-holder"></div>
+        </div>
     </body>
 </html>
