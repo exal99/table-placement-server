@@ -39,27 +39,22 @@ function makeInputBar() {
     const button = document.getElementById('update');
     button.addEventListener('click', (event) => {
         const val = parseInt(document.getElementById('n-chairs').value);
-        //const val = parseInt(tempInfo[0]);
         if (!isNaN(val)) {
             numChairs = val;
-            //document.getElementById('n-chairs').value = numChairs;
             updateNumChairs();
             updateProject();
         }
         
         const newName = document.getElementById('p-name').value;
-        //const newName = (tempInfo[1] !== null) ? tempInfo[1] : "";
         if (newName !== "") {
             leaveProject();
             window.history.pushState("Something", "", "/project/" + newName);
             projectName = newName;
-            //document.getElementById('p-name').value = newName;
             joinProject();
         } else {
             leaveProject();
             window.history.pushState("Something", "", "/");
             projectName = null;
-            //document.getElementById('p-name').value = newName;
         }   
     });
 
@@ -178,7 +173,7 @@ function setup() {
 }
     
 function draw() {
-    background(color('#00a8ff'));
+    background(color(BACKGROUND_COLOR));
     push();
     scale(zoomAmount);
     translate(translateVector.x + currentTranslate.x, translateVector.y + currentTranslate.y);
@@ -276,8 +271,6 @@ function mouseDragged() {
                                 
 function mousePressed(event) {
     lastPress = createVector(mouseX, mouseY);
-    //tempInfo = [document.getElementById('n-chairs').value, document.getElementById('p-name').value];
-    
 }
     
 function keyPressed() {
