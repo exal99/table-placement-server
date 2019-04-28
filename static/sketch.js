@@ -21,29 +21,36 @@ let cnv;
 
 let socket;
 let projectName = null;
+let tempInfo = [null, null];
 
 let uuid;
 
 function makeInputBar() {
     const button = document.getElementById('update');
     button.addEventListener('click', (event) => {
+        print("pressed");
         const val = parseInt(document.getElementById('n-chairs').value);
+        //const val = parseInt(tempInfo[0]);
         if (!isNaN(val)) {
             numChairs = val;
+            //document.getElementById('n-chairs').value = numChairs;
             updateNumChairs();
             updateProject();
         }
         
         const newName = document.getElementById('p-name').value;
+        //const newName = (tempInfo[1] !== null) ? tempInfo[1] : "";
         if (newName !== "") {
             leaveProject();
             window.history.pushState("Something", "", "/project/" + newName);
             projectName = newName;
+            //document.getElementById('p-name').value = newName;
             joinProject();
         } else {
             leaveProject();
             window.history.pushState("Something", "", "/");
             projectName = null;
+            //document.getElementById('p-name').value = newName;
         }   
     });
 
@@ -197,6 +204,10 @@ function mouseClicked() {
             chair.selected = false;
         }
     });
+    print("mouse");
+    print("mouse2");
+    document.getElementById('n-chairs').value = numChairs;
+    document.getElementById('p-name').value = projectName;
 }
 
 function getTableBox() {
@@ -255,8 +266,10 @@ function mouseDragged() {
     currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
 }
                                 
-function mousePressed() {
+function mousePressed(event) {
     lastPress = createVector(mouseX, mouseY);
+    //tempInfo = [document.getElementById('n-chairs').value, document.getElementById('p-name').value];
+    
 }
     
 function keyPressed() {

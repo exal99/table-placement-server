@@ -5,6 +5,10 @@
         <title>Table Placement</title>
 
         <link rel="stylesheet" href="/static/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
@@ -12,13 +16,23 @@
         <script src="/static/chair.js"></script>
     </head>
     <body>
-        <div class="background spacer"></div>
+        <!--<div class="background spacer"></div>-->
         <div id="menu_bar" class="background">
-            <div class="menu_item">Number of chairs: <input type="text" id="n-chairs">
+            <div id="left-item" class="menu_item">
+                <input type="text" id="p-name" placeholder="Project Name"
+                {% if project_name %}
+                    value= {{project_name}} >
+                {% else %}
+                    >
+                {% endif %}
+                
             </div>
-            <div class="menu_item">Project name: <input type="text" id="p-name"
-            {% if project_name %} value= {{project_name}} > {% else %} > {% endif %}
-            <button id="update">Update project</button>
+            <div id="right-item" class="menu_item">
+                <!--<p>Project name:</p>-->
+                
+                <p>Number of chairs:</p>
+                <input type="text" id="n-chairs">
+                <button id="update">Update Project <i class="fas fa-sync"></i></button>
             </div>
         </div>
         <div id="confirm">
