@@ -61,5 +61,5 @@ def on_update_project(data):
     emit('update', to_return, room=data['project'])
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True)
     #app.run(debug=True, host='127.0.0.1')
