@@ -3,6 +3,8 @@ import redis
 import pickle
 import uuid
 
+from urllib.parse import unquote
+
 from flask import Flask, render_template
 from flask_socketio import SocketIO, join_room, leave_room, emit
 
@@ -27,7 +29,7 @@ def set_val(key, value):
 @app.route('/')
 @app.route('/project/<project_name>')
 def index(project_name=None):
-    return render_template('index.html', project_name=project_name)
+    return render_template('index.html', project_name=unquote(project_name))
 
 @socketio.on('connect')
 def on_connect():

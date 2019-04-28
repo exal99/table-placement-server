@@ -31,7 +31,6 @@ let cnv;
 
 let socket;
 let projectName = null;
-let tempInfo = [null, null];
 
 let uuid;
 
@@ -136,7 +135,7 @@ function setup() {
 
     frameRate(60);
     if (location.pathname.startsWith("/project/")) {
-        projectName = location.pathname.slice(9);
+        projectName = decodeURIComponent(location.pathname.slice(9));
     } else {
         for (let i = 0; i < numChairs; i++) {
             chairs.push(new Chair(chairSize, ""));
