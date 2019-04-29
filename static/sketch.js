@@ -119,7 +119,8 @@ function leaveProject() {
     
 function setup() {
     textFont('Work Sans');
-    lastPress = createVector(0,0);
+    //lastPress = createVector(0,0);
+    lastPress = null;
     cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
     cnv.elt.style.width  = "100%";
     cnv.elt.style.height = "100%";
@@ -262,16 +263,17 @@ function mouseReleased() {
     translateVector.add(currentTranslate);
     currentTranslate.x = 0;
     currentTranslate.y = 0;
+    lastPress = null;
 }
 
 function mouseDragged() {
-    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height)
+    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height && lastPress !== null)
         currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
 }
                                 
 function mousePressed() {
     if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height)
-        lastPress = createVector(mouseX, mouseY);
+        lastPress = createVector(mouseX, mouseY)
 }
     
 function keyPressed() {
