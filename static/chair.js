@@ -1,30 +1,49 @@
 class Chair {
-    constructor(size, name) {
-        this.x = 0;
-        this.y = 0;
+    constructor(pos, size, name) {
+        this.x = pos.x;
+        this.y = pos.y;
         this.size = size;
         this.selected = false;
         this.mouseOver = false;
         this.name = (name === undefined) ? '' : name;
+        const input = document.createElement('div');
+        input.contentEditable = true;
+        //input.type = "text";
+        input.className = "chair-input";
+        input.style.width = `${size}px`;
+        input.style.height = `${size}px`;
+        input.style.top = `${pos.y}px`;
+        input.style.left = `${pos.x}px`;
+        this.input = input;
+        document.getElementById('sketch-holder').appendChild(input);
+    }
+
+    update() {
+        const translate = `translate(${translateVector.x + currentTranslate.x}px, ${translateVector.y + currentTranslate.y}px)`;
+        const scale = `scale(${zoomAmount}, ${zoomAmount})`;
+        //this.input.style.transform = translate;
+        this.input.style.width = this.size * zoomAmount + "px";
+        this.input.style.height = this.size * zoomAmount + "px";
+        //this.input.style.transform += scale;
+        //this.input.style.transform = scale + " " + translate + ";";//translate + " " + scale + ";";
+        this.input.style.top = `${(this.y+translateVector.y+currentTranslate.y)*zoomAmount}px`;
+        this.input.style.left = `${(this.x+translateVector.x+currentTranslate.x)*zoomAmount}px`;
     }
 
     draw() {
         push();
         strokeWeight(5);
         if (this.selected) {
-            //stroke(244, 170, 66);
             stroke(color(CHAIR_BORDER_SELECTED));
             fill(color(CHAIR_SELECTED));
         } else if (this.mouseOver){
-            //stroke(252, 210, 151);
             stroke(color(CHAIR_BORDER_HIGHLIGHT));
             fill(color(CHAIR_HIGHLIGHT));
         } else {
-            //stroke(0);
             stroke(color(CHAIR_BORDER));
             fill(color(CHAIR_COLOR));
         }
-        rect(this.x, this.y, this.size, this.size);
+        //rect(this.x, this.y, this.size, this.size);
         
         const x = this.x + this.size / 2;
         const y = this.y + this.size / 2;
@@ -36,7 +55,7 @@ class Chair {
         fill(255);
         textSize(18);
         strokeWeight(0);
-        text(this.name, x, y, this.size * textBoxPercent, this.size * textBoxPercent);
+        //text(this.name, x, y, this.size * textBoxPercent, this.size * textBoxPercent);
         rectMode(CORNER);
         pop();
     }

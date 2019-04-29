@@ -34,30 +34,32 @@
     </head>
     <body>
         <div style="height: 100%; width:100%; display: flex; flex-flow: column;">
-        <div id="menu_bar" class="background">
-            <div id="left-item" class="menu_item">
-                <input type="text" id="p-name" placeholder="Project Name"
-                {% if project_name %}
-                    value= "{{ project_name }}" >
-                {% else %}
-                    >
-                {% endif %}
-                
+            <div id="menu_bar" class="background">
+                <div id="left-item" class="menu_item">
+                    <input type="text" id="p-name" placeholder="Project Name"
+                    {% if project_name %}
+                        value= "{{ project_name }}" >
+                    {% else %}
+                        >
+                    {% endif %}
+                    
+                </div>
+                <div id="right-item" class="menu_item">                
+                    <p>Number of chairs:</p>
+                    <input type="text" id="n-chairs">
+                    <button id="update">Update Project<i class="fas fa-sync"></i></button>
+                </div>
             </div>
-            <div id="right-item" class="menu_item">                
-                <p>Number of chairs:</p>
-                <input type="text" id="n-chairs">
-                <button id="update">Update Project<i class="fas fa-sync"></i></button>
+            <div id="confirm">
+                <div id="confirm-text"><p>Hello</p></div>
+                <div id="confirm-button">
+                    <button type="button"> Ok </button>
+                    <button type="button"> Cancel </button>
+                </div>
             </div>
-        </div>
-        <div id="confirm">
-            <div id="confirm-text"><p>Hello</p></div>
-            <div id="confirm-button">
-                <button type="button"> Ok </button>
-                <button type="button"> Cancel </button>
+            <div id="sketch-holder">
+                <div id="table-box" class="table"></div>
             </div>
-        </div>
-        <div id="sketch-holder"></div>
         </div>
     </body>
 </html>
