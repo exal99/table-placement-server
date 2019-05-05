@@ -1,18 +1,8 @@
 const sencetivity = 1.02;
 
 const BACKGROUND_COLOR = '#00a8ff'
-const TABLE_COLOR = '#dcdde1'
-
-const CHAIR_COLOR = '#353b48';
-const CHAIR_HIGHLIGHT = '#718093';
-const CHAIR_SELECTED = '#7f8fa6';
-const CHAIR_BORDER = '#7f7fa6';
-const CHAIR_BORDER_HIGHLIGHT = '#e1b12c';
-const CHAIR_BORDER_SELECTED = '#fbc531';
 
 let tableDiv;
-let tableWidth;
-let tableHeight;
 
 let numChairs = 0;
 
@@ -27,8 +17,6 @@ let chairs = [];
 let chairsAboveElement;
 let chairsBelowElement;
 
-let backspacePressedTime = 0;
-
 let cnv;
 
 let socket;
@@ -40,7 +28,7 @@ function makeInputBar() {
     const button = document.getElementById('update');
     button.addEventListener('click', (event) => {
         const val = parseInt(document.getElementById('n-chairs').value);
-        if (!isNaN(val) && val != numChairs) {
+        if (!isNaN(val) && val != numChairs && val > 0) {
             numChairs = val;
             updateNumChairs();
             updateProject();
@@ -142,8 +130,8 @@ function setup() {
             chairs.push(new Chair(i%2 === 0, updateProject));
         }
 
-        tableWidth = tableDiv.scrollWidth;
-        tableHeight = tableDiv.scrollHeight;
+        const tableWidth = tableDiv.scrollWidth;
+        const tableHeight = tableDiv.scrollHeight;
 
         translateVector = getOrigin(tableWidth, tableHeight, zoomAmount);
         updateTable();
@@ -165,8 +153,8 @@ function setup() {
             }
 
             if (data['uuid'] === 'server') {
-                tableWidth = tableDiv.scrollWidth;
-                tableHeight = tableDiv.scrollHeight;
+                const tableWidth = tableDiv.scrollWidth;
+                const tableHeight = tableDiv.scrollHeight;
         
                 translateVector = getOrigin(tableWidth, tableHeight, zoomAmount);
                 updateTable();
