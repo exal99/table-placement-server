@@ -246,6 +246,38 @@ function windowResized() {
 
 }
 
+function keyPressed() {
+    if (document.activeElement.className === 'chair-input' && keyIsDown(CONTROL) && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+        move(document.activeElement.index, (keyCode === LEFT_ARROW) ? -1 : 1);
+        return false;
+    }
+}
+
+function move(index, direction) {
+    if (chairs[index].getName === "") {
+        return;
+    }
+    const offset = 2 * direction;
+    let end = index;
+    do {
+        if (end + offset >= chairs.length || end + offset < 0)
+            return;
+        end += offset;
+    } while (chairs[end].getName() !== "");
+    
+    for (let i = end; i != index; i -= offset) {
+        chairs[i].setName(chairs[i - offset].getName());
+        chairs[i].input.oninput();
+    }
+    chairs[index].setName("");
+    
+    chairs[index].input.oninput();
+
+    chairs[index + offset].input.focus();
+    document.execCommand("selectAll", false, null);
+    
+}
+
 function showConfirmBox(text, callback) {
     const window = document.getElementById("confirm");
     window.style.display = "block";
