@@ -1,7 +1,5 @@
 const sencetivity = 1.02;
 
-const BACKGROUND_COLOR = '#00a8ff'
-
 let tableDiv;
 
 let numChairs = 0;
@@ -124,7 +122,6 @@ function mouseDownHandeler(event) {
 }
     
 function setup() {
-    //textFont('Work Sans');
     lastPress = null;
     cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
     cnv.elt.style.width  = "100%";
@@ -220,7 +217,6 @@ function updateTable() {
 }
     
 function draw() {
-    //background(color(BACKGROUND_COLOR, 0)); 
     background(0,0);   
 }
 
@@ -248,7 +244,6 @@ function windowResized() {
     cnv.elt.style.width  = "100%";
     cnv.elt.style.height = "100%";
 
-    //translateVector.sub()
 }
 
 function showConfirmBox(text, callback) {
