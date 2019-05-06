@@ -1,19 +1,10 @@
-const chairSize = 150;
-const tableHeight = 130;
-const padding = 20;
-const sencetivity = 1.05;
+const sencetivity = 1.02;
 
 const BACKGROUND_COLOR = '#00a8ff'
-const TABLE_COLOR = '#dcdde1'
 
-const CHAIR_COLOR = '#353b48';
-const CHAIR_HIGHLIGHT = '#718093';
-const CHAIR_SELECTED = '#7f8fa6';
-const CHAIR_BORDER = '#7f7fa6';
-const CHAIR_BORDER_HIGHLIGHT = '#e1b12c';
-const CHAIR_BORDER_SELECTED = '#fbc531';
+let tableDiv;
 
-let numChairs = 10;
+let numChairs = 0;
 
 let lastPress;
 let translateVector;
@@ -23,9 +14,8 @@ let zoomLocation;
 let zoomAmount = 0.7;
 
 let chairs = [];
-let selectedChair = null;
-
-let backspacePressedTime = 0;
+let chairsAboveElement;
+let chairsBelowElement;
 
 let cnv;
 
@@ -38,19 +28,19 @@ function makeInputBar() {
     const button = document.getElementById('update');
     button.addEventListener('click', (event) => {
         const val = parseInt(document.getElementById('n-chairs').value);
-        if (!isNaN(val)) {
+        if (!isNaN(val) && val != numChairs && val > 0) {
             numChairs = val;
             updateNumChairs();
             updateProject();
         }
         
         const newName = document.getElementById('p-name').value;
-        if (newName !== "") {
+        if (newName !== "" && newName != projectName) {
             leaveProject();
             window.history.pushState("Something", "", "/project/" + newName);
             projectName = newName;
             joinProject();
-        } else {
+        } else if (newName != projectName){
             leaveProject();
             window.history.pushState("Something", "", "/");
             projectName = null;
@@ -58,7 +48,7 @@ function makeInputBar() {
     });
 
     document.getElementById('p-name').addEventListener("keyup", (event) => {
-        if (event.keyCode == 13) {
+        if (event.keyCode == 13) { // keyCode == 13 <==> ENTER
             event.preventDefault();
             button.click();
         }
@@ -87,10 +77,6 @@ function getCanvasPos() {
     return {'x': x, 'y': y};
 }
 
-function tableWidth(chairs) {
-    return chairs * chairSize + padding * (chairs + 1);
-}
-
 function getData() {
     return {
         project:projectName,
@@ -116,10 +102,29 @@ function leaveProject() {
     if (projectName !== null)
         socket.emit('leave', {project: projectName});
 }
+
+function mouseDownHandeler(event) {
+    lastPress = createVector(mouseX, mouseY);
+
+    function mouseMoveHandeler(event) {
+        currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
+        updateTable();
+    }
+
+    tableDiv.addEventListener('mousemove', mouseMoveHandeler);
+
+    tableDiv.addEventListener('mouseup', (event) => {
+        tableDiv.removeEventListener('mousemove', mouseMoveHandeler);
+        translateVector.add(currentTranslate);
+        currentTranslate.x = 0;
+        currentTranslate.y = 0;
+        lastPress = null;
+        updateTable();
+    });
+}
     
 function setup() {
     textFont('Work Sans');
-    //lastPress = createVector(0,0);
     lastPress = null;
     cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
     cnv.elt.style.width  = "100%";
@@ -132,16 +137,28 @@ function setup() {
     zoomLocation = createVector(0,0);
         
     makeInputBar();
-    
+    tableDiv = document.getElementById('table-div');
+
+    document.getElementById('table-box').onmousedown = mouseDownHandeler;
+
+    chairsAboveElement = document.getElementById('chairs-above');
+    chairsBelowElement = document.getElementById('chairs-below');
 
     frameRate(60);
     if (location.pathname.startsWith("/project/")) {
         projectName = decodeURIComponent(location.pathname.slice(9));
     } else {
+        numChairs = 10;
+        document.getElementById('n-chairs').value = 10;
         for (let i = 0; i < numChairs; i++) {
-            chairs.push(new Chair(chairSize, ""));
+            chairs.push(new Chair(i%2 === 0, updateProject, i));
         }
-        updateChairsPos();
+
+        const tableWidth = tableDiv.scrollWidth;
+        const tableHeight = tableDiv.scrollHeight;
+
+        translateVector = getOrigin(tableWidth, tableHeight, zoomAmount);
+        updateTable();
     }
     
     socket = io.connect(location.protocol + '//' + document.domain + ":" + location.port);
@@ -156,96 +173,62 @@ function setup() {
             document.getElementById('n-chairs').value = data['numChairs'];
             updateNumChairs();
             for (let i = 0; i < numChairs; i++) {
-                chairs[i].name = data['chairs'][i];
+                chairs[i].setName(data['chairs'][i]);
+            }
+
+            if (data['uuid'] === 'server') {
+                const tableWidth = tableDiv.scrollWidth;
+                const tableHeight = tableDiv.scrollHeight;
+        
+                translateVector = getOrigin(tableWidth, tableHeight, zoomAmount);
+                updateTable();
             }
         }
     });
 
     socket.on('connected', (server_uuid) => {
         uuid = server_uuid;
-    });
-
-    socket.on('connect', () => {
         if (location.pathname.startsWith("/project/") && location.pathname.length > 9) {
             joinProject();
         }
     });
-}
-    
-function draw() {
-    background(color(BACKGROUND_COLOR));
-    push();
-    scale(zoomAmount);
-    translate(translateVector.x + currentTranslate.x, translateVector.y + currentTranslate.y);
-            
-    chairs.forEach((chair) => {
-        if (chair.isInside(getAcctualMousePos())) {
-            chair.mouseOver = true;
-        } else {
-            chair.mouseOver = false;
-        }
-        chair.draw();
+
+    socket.on('connect', () => {
+        print("connected");
     });
-    const tBox = getTableBox();
-    strokeWeight(5);
-    fill(TABLE_COLOR);
-    rect(tBox.x, tBox.y, tBox.width, tBox.height);
-    pop();
-
-    if (keyIsDown(BACKSPACE) && millis() - backspacePressedTime > 400 && selectedChair !== null) {
-        selectedChair.name = selectedChair.name.slice(0, selectedChair.name.length - 1);
-        updateProject();
-    }
-    
 }
 
-function mouseClicked() {
-    chairs.forEach((chair) => {
-        if (chair.isInside(getAcctualMousePos())) {
-            chair.selected = true;
-            selectedChair = chair;
-        } else {
-            selectedChair = (chair === selectedChair) ? null : selectedChair;
-            chair.selected = false;
-        }
-    });
-    document.getElementById('n-chairs').value = numChairs;
-    document.getElementById('p-name').value = projectName;
-}
-
-function getTableBox() {
-    const tWidth = tableWidth(ceil(numChairs/2));
-    const tableX = 1/0.7*width/2 - tWidth/2;
-    const tableY = 1/0.7*height/2 - tableHeight/2;
-
-    return {"width": tWidth, "height": tableHeight, "x": tableX, "y": tableY};
+function getOrigin(tWidth, tHeight, startZoom) {
+    return createVector(width/(2 * startZoom) - tWidth/2, height/(2 * startZoom) - tHeight/2)
 }
 
 function updateNumChairs() {
     const toAdd = numChairs - chairs.length;
 
     if (toAdd < 0) {
-        chairs.splice(chairs.length + toAdd);
+        chairs.splice(toAdd).forEach((chair) => chair.remove());
     } else {
+        const startIndex = chairs.length;
         for (let i = 0; i < toAdd; i++) {
-            chairs.push(new Chair(chairSize));
+            chairs.push(new Chair((i + startIndex) % 2 == 0, updateProject, i + startIndex));
         }
     }
-
-    updateChairsPos();
 }
 
-function updateChairsPos() {
-    let top = true;
-
-    const tableBox = getTableBox();
+function updateTable() {
+    let {x, y} = p5.Vector.add(translateVector, currentTranslate);
+    tableDiv.style.transform = `scale(${zoomAmount}, ${zoomAmount}) translate(${x}px, ${y}px)`;
+}
     
-    for (let i = 0; i < chairs.length; i++) {
-        const x = tableBox.x + padding + Math.floor(i/2) * (padding + chairSize);
-        chairs[i].updatePos(x, (top) ? tableBox.y - padding - chairSize : tableBox.y + padding + tableBox.height);
-        top = !top;
-    }        
+function draw() {
+    background(color(BACKGROUND_COLOR));    
 }
+
+function mouseClicked() {
+    document.getElementById('n-chairs').value = numChairs;
+    document.getElementById('p-name').value = projectName;
+}
+
 
 function getAcctualMousePos() {
     return createVector(mouseX, mouseY).mult(1/zoomAmount).sub(p5.Vector.add(translateVector, currentTranslate));
@@ -257,55 +240,16 @@ function mouseWheel(event) {
     zoomAmount = max(zoomAmount, 0.3);
     const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
     translateVector.add(p5.Vector.sub(newPos, mousePos));
-}
-                        
-function mouseReleased() {
-    translateVector.add(currentTranslate);
-    currentTranslate.x = 0;
-    currentTranslate.y = 0;
-    lastPress = null;
-}
 
-function mouseDragged() {
-    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height && lastPress !== null)
-        currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
-}
-                                
-function mousePressed() {
-    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height)
-        lastPress = createVector(mouseX, mouseY)
-}
-    
-function keyPressed() {
-    if (selectedChair !== null) {
-        if (keyCode === BACKSPACE) {
-            selectedChair.name = selectedChair.name.slice(0, selectedChair.name.length - 1);
-            backspacePressedTime = millis();
-            updateProject();
-        }
-        
-        if (keyCode === DELETE) {
-            selectedChair.name = "";
-            updateProject();
-        }
-    }
-}
-
-function keyTyped() {
-    if (selectedChair !== null) {
-        selectedChair.name += key;
-        updateProject();
-    }
+    updateTable();
 }
 
 function windowResized() {
     resizeCanvas(getWidth(), getHeight());
     cnv.elt.style.width  = "100%";
     cnv.elt.style.height = "100%";
-    const pos = getCanvasPos();
-    cnv.position(pos.x, pos.y);
 
-    updateChairsPos();
+    translateVector.sub()
 }
 
 function showConfirmBox(text, callback) {
