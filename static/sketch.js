@@ -124,7 +124,7 @@ function mouseDownHandeler(event) {
 }
     
 function setup() {
-    textFont('Work Sans');
+    //textFont('Work Sans');
     lastPress = null;
     cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
     cnv.elt.style.width  = "100%";
@@ -220,7 +220,8 @@ function updateTable() {
 }
     
 function draw() {
-    background(color(BACKGROUND_COLOR));    
+    //background(color(BACKGROUND_COLOR, 0)); 
+    background(0,0);   
 }
 
 function mouseClicked() {
@@ -247,7 +248,7 @@ function windowResized() {
     cnv.elt.style.width  = "100%";
     cnv.elt.style.height = "100%";
 
-    translateVector.sub()
+    //translateVector.sub()
 }
 
 function showConfirmBox(text, callback) {
