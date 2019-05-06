@@ -102,6 +102,26 @@ function leaveProject() {
     if (projectName !== null)
         socket.emit('leave', {project: projectName});
 }
+
+function mouseDownHandeler(event) {
+    lastPress = createVector(mouseX, mouseY);
+
+    function mouseMoveHandeler(event) {
+        currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
+        updateTable();
+    }
+
+    tableDiv.addEventListener('mousemove', mouseMoveHandeler);
+
+    tableDiv.addEventListener('mouseup', (event) => {
+        tableDiv.removeEventListener('mousemove', mouseMoveHandeler);
+        translateVector.add(currentTranslate);
+        currentTranslate.x = 0;
+        currentTranslate.y = 0;
+        lastPress = null;
+        updateTable();
+    });
+}
     
 function setup() {
     textFont('Work Sans');
@@ -118,6 +138,8 @@ function setup() {
     makeInputBar();
     tableDiv = document.getElementById('table-div');
 
+    document.getElementById('table-box').onmousedown = mouseDownHandeler;
+
     chairsAboveElement = document.getElementById('chairs-above');
     chairsBelowElement = document.getElementById('chairs-below');
 
@@ -126,6 +148,7 @@ function setup() {
         projectName = decodeURIComponent(location.pathname.slice(9));
     } else {
         numChairs = 10;
+        document.getElementById('n-chairs').value = 10;
         for (let i = 0; i < numChairs; i++) {
             chairs.push(new Chair(i%2 === 0, updateProject));
         }
@@ -217,26 +240,6 @@ function mouseWheel(event) {
     const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
     translateVector.add(p5.Vector.sub(newPos, mousePos));
     updateTable();
-}
-                        
-function mouseReleased() {
-    translateVector.add(currentTranslate);
-    currentTranslate.x = 0;
-    currentTranslate.y = 0;
-    lastPress = null;
-    updateTable();
-}
-
-function mouseDragged() {
-    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height && lastPress !== null) {
-        currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
-        updateTable();
-    }
-}
-                                
-function mousePressed() {
-    if (0 <= mouseX && mouseX <= width && 0 <= mouseY && mouseY <= height)
-        lastPress = createVector(mouseX, mouseY)
 }
 
 function windowResized() {

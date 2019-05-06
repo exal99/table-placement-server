@@ -142,6 +142,10 @@ html, body {
     color: #fff;
 }
 
+.table:hover {
+    background-color: #f5f6fa
+}
+
 .table {
     height: 150px;
     width: inherit;
