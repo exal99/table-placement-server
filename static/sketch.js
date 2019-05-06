@@ -150,7 +150,7 @@ function setup() {
         numChairs = 10;
         document.getElementById('n-chairs').value = 10;
         for (let i = 0; i < numChairs; i++) {
-            chairs.push(new Chair(i%2 === 0, updateProject));
+            chairs.push(new Chair(i%2 === 0, updateProject, i));
         }
 
         const tableWidth = tableDiv.scrollWidth;
@@ -207,9 +207,9 @@ function updateNumChairs() {
     if (toAdd < 0) {
         chairs.splice(toAdd).forEach((chair) => chair.remove());
     } else {
-        const top = chairs.length % 2;
+        const startIndex = chairs.length;
         for (let i = 0; i < toAdd; i++) {
-            chairs.push(new Chair((i+top) % 2 == 0, updateProject));
+            chairs.push(new Chair((i + startIndex) % 2 == 0, updateProject, i + startIndex));
         }
     }
 }
