@@ -7,12 +7,17 @@ from urllib.parse import unquote
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO, join_room, leave_room, emit
+from flask_talisman import Talisman
 
 
 REDIS_URL = os.environ['REDIS_URL']
 
 app = Flask(__name__)
+Talisman(app)
+
 socketio = SocketIO(app)
+
+
 redis = redis.from_url(os.environ.get("REDIS_URL"))
 
 EMPTY_PROJECT = {
