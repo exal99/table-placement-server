@@ -1,14 +1,12 @@
 const sencetivity = 1.02;
 
 let tableDiv;
+let scaleDiv;
 
 let numChairs = 0;
 
-let lastPress;
 let translateVector;
-let currentTranslate;
 
-let zoomLocation;
 let zoomAmount = 0.7;
 
 let chairs = [];
@@ -100,26 +98,6 @@ function leaveProject() {
     if (projectName !== null)
         socket.emit('leave', {project: projectName});
 }
-
-function mouseDownHandeler(event) {
-    lastPress = createVector(mouseX, mouseY);
-
-    function mouseMoveHandeler(event) {
-        currentTranslate = createVector(mouseX, mouseY).sub(lastPress).mult(1/zoomAmount);
-        updateTable();
-    }
-
-    tableDiv.addEventListener('mousemove', mouseMoveHandeler);
-
-    tableDiv.addEventListener('mouseup', (event) => {
-        tableDiv.removeEventListener('mousemove', mouseMoveHandeler);
-        translateVector.add(currentTranslate);
-        currentTranslate.x = 0;
-        currentTranslate.y = 0;
-        lastPress = null;
-        updateTable();
-    });
-}
     
 function setup() {
     lastPress = null;
@@ -128,15 +106,58 @@ function setup() {
     cnv.elt.style.height = "100%";
 
     translateVector = createVector(0,0);
-    currentTranslate = createVector(0,0);
-        
-    zoomLocation = createVector(0,0);
-        
+
     makeInputBar();
     tableDiv = document.getElementById('table-div');
+    scaleDiv = document.getElementById('scale-div');
 
-    document.getElementById('table-box').onmousedown = mouseDownHandeler;
+    function dragMoveListener(event) {
+        translateVector.add(event.dx, event.dy);
+        const {x, y} = translateVector;
+        tableDiv.style.transform = `translate(${x}px, ${y}px)`;
+    }
 
+    interact("#table-box")
+        .draggable({
+            inertia: true,
+
+            //autoScroll: true,
+
+            modifiers: [
+                interact.modifiers.restrict({
+                    restriction: "#sketch-holder",
+                    endOnly: true,
+                    elementRect: {top: 0, left: 0.9, bottom: 1, right: 0.1}
+                }),
+            ],
+
+            onmove: dragMoveListener
+        })
+        .gesturable({
+            onmove: function (event) {
+                const currentZoom = zoomAmount * event.scale;
+                scaleDiv.style.transform = `scale(${currentZoom}, ${currentZoom})`;
+                dragMoveListener(event);
+            },
+
+            onend: function (event) {
+                zoomAmount *= event.scale;
+            }
+        });
+
+    interact("#sketch-holder")
+        .gesturable({
+                onmove: function (event) {
+                    const currentZoom = Math.max(zoomAmount * event.scale, 0.3);
+                    scaleDiv.style.transform = `scale(${currentZoom}, ${currentZoom})`;
+                    dragMoveListener(event);
+                },
+
+                onend: function (event) {
+                    zoomAmount = Math.max(zoomAmount * event.scale, 0.3);
+                }
+        });
+        
     chairsAboveElement = document.getElementById('chairs-above');
     chairsBelowElement = document.getElementById('chairs-below');
 
@@ -192,10 +213,12 @@ function setup() {
     socket.on('connect', () => {
         print("connected");
     });
+
+    noLoop();
 }
 
 function getOrigin(tWidth, tHeight, startZoom) {
-    return createVector(width/(2 * startZoom) - tWidth/2, height/(2 * startZoom) - tHeight/2)
+    return createVector(width/(2) - tWidth/2, height/(2) - tHeight/2)
 }
 
 function updateNumChairs() {
@@ -212,13 +235,11 @@ function updateNumChairs() {
 }
 
 function updateTable() {
-    let {x, y} = p5.Vector.add(translateVector, currentTranslate);
-    tableDiv.style.transform = `scale(${zoomAmount}, ${zoomAmount}) translate(${x}px, ${y}px)`;
+    const {x, y} = translateVector;
+    tableDiv.style.transform = `translate(${x}px, ${y}px)`;
+    scaleDiv.style.transform = `scale(${zoomAmount}, ${zoomAmount})`;
 }
-    
-function draw() {
-    background(0,0);   
-}
+
 
 function mouseClicked() {
     document.getElementById('n-chairs').value = numChairs;
@@ -227,15 +248,12 @@ function mouseClicked() {
 
 
 function getAcctualMousePos() {
-    return createVector(mouseX, mouseY).mult(1/zoomAmount).sub(p5.Vector.add(translateVector, currentTranslate));
+    return createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
 }
             
 function mouseWheel(event) {
-    const mousePos = getAcctualMousePos();
     zoomAmount *= (event.delta < 0) ? sencetivity : 1/sencetivity;
     zoomAmount = max(zoomAmount, 0.3);
-    const newPos = createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
-    translateVector.add(p5.Vector.sub(newPos, mousePos));
     updateTable();
 }
 
