@@ -98,6 +98,16 @@ function leaveProject() {
     if (projectName !== null)
         socket.emit('leave', {project: projectName});
 }
+
+function updateChairSize() {
+    for (let i = 0; i < chairs.length; i += 2) {
+        const firstWidth = chairs[i].input.scrollWidth;
+        const secondWidth = chairs[i+1].input.scrollWidth;
+        
+        chairs[i].input.style.width = chairs[i+1].input.style.width = Math.max(firstWidth, secondWidth, 150) + "px";
+        chairs[i].input.style.minWidth = chairs[i+1].input.style.minWidth = Math.max(firstWidth, secondWidth, 150) + "px";
+    }
+}
     
 function setup() {
     lastPress = null;
@@ -192,6 +202,7 @@ function setup() {
             for (let i = 0; i < numChairs; i++) {
                 chairs[i].setName(data['chairs'][i]);
             }
+            updateChairSize();
 
             if (data['uuid'] === 'server') {
                 const tableWidth = tableDiv.scrollWidth;

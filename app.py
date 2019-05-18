@@ -20,10 +20,15 @@ EMPTY_PROJECT = {
     'chairs': ["" for e in range(10)]
 }
 
-def get_val(value):
-    return pickle.loads(redis.get(value)) if redis.get(value) else EMPTY_PROJECT
+remove_html_encoding = lambda x: [e.replace(u'\xa0', ' ') for e in x]
 
+def get_val(value):
+    value = pickle.loads(redis.get(value)) if redis.get(value) else EMPTY_PROJECT
+    value['chairs'] = remove_html_encoding(value['chairs'])
+    return value
+    
 def set_val(key, value):
+    value['chairs'] = remove_html_encoding(value['chairs'])
     return redis.set(key, pickle.dumps(value))
 
 @app.route('/')
