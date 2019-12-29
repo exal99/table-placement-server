@@ -13,7 +13,7 @@ let chairs = [];
 let chairsAboveElement;
 let chairsBelowElement;
 
-let cnv;
+let background;
 
 let socket;
 let projectName = null;
@@ -110,10 +110,7 @@ function updateChairSize() {
 }
     
 function setup() {
-    lastPress = null;
-    cnv = createCanvas(getWidth(), getHeight()).parent('sketch-holder');
-    cnv.elt.style.width  = "100%";
-    cnv.elt.style.height = "100%";
+    background = document.getElementById('sketch-holder');
 
     translateVector = createVector(0,0);
 
@@ -171,7 +168,6 @@ function setup() {
     chairsAboveElement = document.getElementById('chairs-above');
     chairsBelowElement = document.getElementById('chairs-below');
 
-    frameRate(60);
     if (location.pathname.startsWith("/project/")) {
         projectName = decodeURIComponent(location.pathname.slice(9));
     } else {
@@ -225,11 +221,12 @@ function setup() {
         print("connected");
     });
 
-    noLoop();
+    document.onclick = mouseClicked;
+    document.onwheel = mouseWheel;
 }
 
 function getOrigin(tWidth, tHeight, startZoom) {
-    return createVector(width/(2) - tWidth/2, height/(2) - tHeight/2)
+    return createVector(background.scrollWidth/(2) - tWidth/2, background.scrollHeight/(2) - tHeight/2)
 }
 
 function updateNumChairs() {
@@ -256,30 +253,11 @@ function mouseClicked() {
     document.getElementById('n-chairs').value = numChairs;
     document.getElementById('p-name').value = projectName;
 }
-
-
-function getAcctualMousePos() {
-    return createVector(mouseX, mouseY).mult(1/zoomAmount).sub(translateVector);
-}
             
 function mouseWheel(event) {
-    zoomAmount *= (event.delta < 0) ? sencetivity : 1/sencetivity;
-    zoomAmount = max(zoomAmount, 0.3);
+    zoomAmount *= (event.deltaY < 0) ? sencetivity : 1/sencetivity;
+    zoomAmount = Math.max(zoomAmount, 0.3);
     updateTable();
-}
-
-function windowResized() {
-    resizeCanvas(getWidth(), getHeight());
-    cnv.elt.style.width  = "100%";
-    cnv.elt.style.height = "100%";
-
-}
-
-function keyPressed() {
-    if (document.activeElement.className === 'chair-input' && keyIsDown(CONTROL) && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
-        move(document.activeElement.index, (keyCode === LEFT_ARROW) ? -1 : 1);
-        return false;
-    }
 }
 
 function move(index, direction) {
@@ -343,3 +321,4 @@ function showConfirmBox(text, callback) {
     document.body.addEventListener('click', cancelEventListener);
     window.addEventListener('click', windowClick);
 }
+
