@@ -58,21 +58,6 @@ function makeInputBar() {
     });  
 }
 
-
-function getWidth() {
-    return windowWidth * 1;
-}
-
-function getHeight() {
-    return windowHeight * 1;
-}
-
-function getCanvasPos() {
-    x = (windowWidth - width) / 2;
-    y = (windowHeight - height) / 2;
-    return {'x': x, 'y': y};
-}
-
 function getData() {
     return {
         project:projectName,
@@ -163,6 +148,9 @@ function setup() {
                 onend: function (event) {
                     zoomAmount = Math.max(zoomAmount * event.scale, 0.3);
                 }
+        })
+        .draggable({
+            onmove: dragMoveListener
         });
         
     chairsAboveElement = document.getElementById('chairs-above');
