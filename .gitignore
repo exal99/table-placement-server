@@ -2,6 +2,7 @@
 node_modules
 /dist
 __pycache__/*
+.vscode/*
 
 # local env files
 .env.local
