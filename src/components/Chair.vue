@@ -1,6 +1,9 @@
 <template>
-    <div contenteditable="true">
-        {{ name }}
+    <div class="container">
+        <div class="content" contenteditable="true">
+            {{ name }}
+        </div>
+       
     </div>
 </template>
 
@@ -18,17 +21,25 @@ export default {
 
 <style scoped>
 
-div {
-    height: 150px;
-    width: 150px;
+.container {
+    margin: 10px;
+    /*height: 150px;
+    width: 150px;*/
     min-width: 150px;
     min-height: 150px;
     font-size: 20px;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
     background-color: #353b48;
     color: #fff;
+    display:table;
+    text-align: center
+}
+
+.content {
+    font-size: 20px;
+    background-color: #353b48;
+    color: #fff;
+    display:table-cell;
+    vertical-align: middle;
 }
 
 </style>

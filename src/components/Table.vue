@@ -1,18 +1,60 @@
 <template>
-    <div style="position:absolute;">
-        <div class="above chair-row">
-            <Chair v-for="[id, name] in chairs[0].entries()"
-            :key="id"
-            :name="name" />
-        </div>
-        <div class="table"></div>
-        <div class="below chair-row">
-            <Chair v-for="[id, name] in chairs[1].entries()"
-            :key="id"
-            :name="name" />
-        </div>
+    <table style="position:absolute;">
+        <tr>
+            <td/>
 
-    </div>
+            <td>
+                <div class="chair-row" style="flex-flox: row nowrap;">
+                    <Chair v-for="[id, name] in chairs[0].entries()"
+                    :key="id"
+                    :name="name"
+                    :tableStyle="'table-cell'" />
+                </div>
+            <td/>
+
+            <td/>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="chair-row" style="flex-flow: column nowrap;">
+                    <Chair v-for="[id, name] in chairs[2].entries()"
+                    :key="id"
+                    :name="name" />
+                </div>
+
+            </td>
+
+            <td>
+                <div class="table" :style="{'height':tableHeight + 'px'}"></div>
+            </td>
+
+            <td>
+                <div class="chair-row" style="flex-flow: column nowrap;">
+                    <Chair v-for="[id, name] in chairs[3].entries()"
+                    :key="id"
+                    :name="name" />
+                </div>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td/>
+
+            <td>
+                <div class="chair-row" style="flex-flow: row nowrap;">
+                    <Chair v-for="[id, name] in chairs[1].entries()"
+                    :key="id"
+                    :name="name"
+                    :tableStyle="'table-cell'" />
+                </div>
+            </td>
+
+            <td/>
+        </tr>
+
+    </table>
 </template>
 
 <script>
@@ -27,22 +69,40 @@ export default {
             type: Array,
             required: true
         }
+    },
+
+    computed: {
+        tableHeight: function () {
+            const height = Math.max(this.chairs[2].length, this.chairs[3].length, 1) * 170;
+            return height;
+        }
     }
 }
 </script>
 
 <style scoped>
 
+td {
+    position:relative;
+}
+
 .chair-row {
-    display: table;
+    /*position: absolute;*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
     border: 0;
     margin: 0;
     border-collapse: separate;
     border-spacing: 10px;
+
 }
 
 .table {
-    height: 150px;
+    /*height: 150px;*/
     width: inherit;
     background-color: #dcdde1;
     border: 3px solid #000000;
