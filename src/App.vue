@@ -1,28 +1,42 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <MenuBar/>
+    <Tables/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import MenuBar from './components/MenuBar.vue'
+import Tables from './components/Tables.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    MenuBar,
+    Tables
+  },
+  metaInfo: {
+    title: 'Seating Plan'
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,600');
+
+* {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 400;
+}
+
+html, body, #app {
+    text-align: center;
+    margin:0;
+    padding:0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 </style>
