@@ -1,3 +1,6 @@
 module.exports = {
-    assetsDir: "static" 
+    assetsDir: "static",
+    configureWebpack: {
+        devtool: 'source-map'
+      }
 }
