@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <div class="content" contenteditable="true">
-            {{ name }}
+        <div class="content" contenteditable="true" @input="onEdit" @keydown.enter="onEnter">
+            {{ localName }}
         </div>
        
     </div>
@@ -10,10 +10,30 @@
 <script>
 export default {
     name: "ChairVue",
+    data () {
+        return {
+            localName: this.name
+        }
+    },
+
     props: {
         name: {
             type:String,
-            required: true
+            required: false,
+            default: ''
+        }
+    },
+
+    methods: {
+        onEdit(event) {
+            const src = event.target.innerHTML;
+            this.localName = src;
+            this.$emit('update:name', this.localName);
+        },
+
+        onEnter() {
+            console.log(this.$el.querySelector(".content"));
+            this.$el.querySelector(".content").blur();
         }
     }
 }

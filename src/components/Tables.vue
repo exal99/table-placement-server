@@ -1,5 +1,5 @@
 <template>
-    <div class="background">
+    <div id="table-background" class="background">
         <Table v-for="table in tables"
         :key="table.id"
         :chairs="table.chairs"

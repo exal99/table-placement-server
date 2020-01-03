@@ -20,6 +20,7 @@ export default {
 
 <style scoped>
 #menu_bar {
+    position: relative;
     padding: 10px 0;
     margin: auto;
     text-align: center;
