@@ -41,4 +41,34 @@ html, body, #app {
     display: flex;
     flex-direction: column;
 }
+
+input {
+    margin-left: 5px;
+    margin-right: 50px;
+    background: #192a56;
+    border-radius: 10px;
+    padding: 4px;
+    color: #ffffff;
+    border: 0;
+    font-size: 16px;
+}
+
+button {
+    float: left;
+    background-color: #192a56;
+    color: #ffffff;
+    border: 0;
+    border-radius: 10px;
+    padding: 4px 6px;
+    font-size: 16px;
+    user-select: none;
+}
+
+button:hover {
+    background-color: #273c75;
+}
+
+button:active {
+    background-color: #40739e;
+}
 </style>

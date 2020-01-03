@@ -5,7 +5,7 @@
 
             <td>
                 <div class="chair-row" style="flex-flox: row nowrap;">
-                    <Chair v-for="[id, name] in chairs[0].entries()"
+                    <Chair v-for="[id, name] in chairs[1].entries()"
                     :key="id"
                     :name.sync="name" />
                 </div>
@@ -17,7 +17,7 @@
         <tr>
             <td>
                 <div class="chair-row" style="flex-flow: column nowrap;">
-                    <Chair v-for="[id, name] in chairs[2].entries()"
+                    <Chair v-for="[id, name] in chairs[0].entries()"
                     :key="id"
                     :name.sync="name" />
                 </div>
@@ -25,12 +25,20 @@
             </td>
 
             <td>
-                <div class="table" :style="{'height':tableHeight + 'px'}"></div>
+                <div class="table" :style="{'height':tableHeight + 'px', 'width':tableWidth + 'px'}" @click="selected = true" v-click-outside="onBlur">
+                    <div v-if="selected" class="selected">
+                        <p class="shape-text flex-item">Shape:</p>
+                        <input type="text" class="input-field  flex-item"
+                        :value="getDimentions()"
+                        @keydown.enter="updateSize">
+                        <button class="update-button flex-item" @click="updateSize">Update</button>
+                    </div>
+                </div>
             </td>
 
             <td>
                 <div class="chair-row" style="flex-flow: column nowrap;">
-                    <Chair v-for="[id, name] in chairs[3].entries()"
+                    <Chair v-for="[id, name] in chairs[2].entries()"
                     :key="id"
                     :name.sync="name" />
                 </div>
@@ -43,7 +51,7 @@
 
             <td>
                 <div class="chair-row" style="flex-flow: row nowrap;">
-                    <Chair v-for="[id, name] in chairs[1].entries()"
+                    <Chair v-for="[id, name] in chairs[3].entries()"
                     :key="id"
                     :name.sync="name" />
                 </div>
@@ -63,6 +71,13 @@ import interact from 'interactjs'
 export default {
     name: "TableVue",
     components: {Chair},
+
+    data() {
+        return {
+            selected: true
+        };
+    },
+
     props: {
         chairs: {
             type: Array,
@@ -72,14 +87,17 @@ export default {
 
     computed: {
         tableHeight: function () {
-            const height = Math.max(this.chairs[2].length, this.chairs[3].length, 1) * 170;
+            const height = Math.max(this.chairs[0].length, this.chairs[2].length, 1) * 170;
             return height;
+        },
+        tableWidth: function () {
+            const width = Math.max(this.chairs[1].length, this.chairs[3].length, 1) * 170;
+            return width;
         }
     },
 
     watch: {
         chairs: function() {
-            console.log("ok");
             interact(".table").draggable({
                 modifiers: [this.getModifiers()]
             });
@@ -88,17 +106,49 @@ export default {
 
     methods: {
         getModifiers() {
-            const left = -1/Math.max(this.chairs[0].length, this.chairs[1].length, 1);
+            const left = -1/Math.max(this.chairs[1].length, this.chairs[3].length, 1);
             const right = 1 - left;
-            const top = -1/Math.max(this.chairs[2].length, this.chairs[3].length, 1);
+            const top = -1/Math.max(this.chairs[0].length, this.chairs[2].length, 1);
             const bottom = 1 - top;
-            console.log({left, right, top, bottom});
             return interact.modifiers.restrictRect({
                 restriction: "#table-background",
                 endOnly: true,
                 elementRect: {left, right, top, bottom}
             });
+        },
+
+        getDimentions() {
+            const chairs = this.chairs;
+            const dim = [chairs[0].length, chairs[1].length, chairs[2].length, chairs[3].length];
+
+            return dim.join('x');
+        },
+
+        onBlur(event) {
+            this.selected = false;
+            event.target.value = this.getDimentions();
+        },
+
+        updateSize(event) {
+            console.log("ok");
+            const value = event.target.parentElement.querySelector(".input-field").value;
+            const dim = value.split('x').map((x) => parseInt(x));
+
+            for (const [ind, row] of this.chairs.entries()) {
+                if (row.length !== dim[ind].length) {
+                    while (row.length > dim[ind]) {
+                        row.pop();
+                    }
+
+                    while (row.length < dim[ind]) {
+                        row.push("");
+                    }
+                }
+            }
+
         }
+
+
     },
 
     mounted: function() {
@@ -165,6 +215,33 @@ td {
     border-radius: 20px;
     touch-action: none;
     user-select: none;
+}
+
+.selected {
+    display:flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    align-content: center;
+    height:100%;
+}
+
+.flex-item {
+    margin: 5px 10px;
+}
+
+.shape-text {
+    width: 100px;
+    font-size: 30px;
+}
+
+.input-field {
+    width: 150px;
+    height: 25px;
+}
+
+.update-button {
+    width: 150px;
+    height: 33px;
 }
 
 </style>

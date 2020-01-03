@@ -1,12 +1,12 @@
 <template>
     <div id="menu_bar">
-        <div id="left-item" class="menu_item">
-            <input type="text" id="p-name" placeholder="Project Name">
+        <div class="menu_item">
+            <input type="text" class="p-name" placeholder="Project Name">
         </div>
-        <div id="right-item" class="menu_item">                
+        <div class="menu_item">                
             <p>Number of chairs:</p>
-            <input type="text" id="n-chairs">
-            <button id="update">Update Project<font-awesome-icon :icon="['fas', 'sync']" id="ico"/></button>
+            <input type="text" class="n-chairs">
+            <button>Update Project<font-awesome-icon :icon="['fas', 'sync']" class="ico"/></button>
             
         </div>
     </div>
@@ -42,17 +42,6 @@ export default {
     margin: 0 3%;
 }
 
-input {
-    margin-left: 5px;
-    margin-right: 50px;
-    background: #192a56;
-    border-radius: 10px;
-    padding: 4px;
-    color: #ffffff;
-    border: 0;
-    font-size: 16px;
-}
-
 p {
     float: left;
     margin: auto 0px;
@@ -60,41 +49,24 @@ p {
     user-select: none;
 }
 
-#p-name {
+.p-name {
     width: 200px;
     float: left;
 }
 
-#n-chairs {
+.n-chairs {
     width: 40px;
     float: left;
 }
 
-button {
-    float: left;
-    background-color: #192a56;
-    color: #ffffff;
-    border: 0;
-    border-radius: 10px;
-    padding: 4px 6px;
-    font-size: 16px;
-    user-select: none;
-}
 
-#ico {
+.ico {
     margin-left: 10px;
     transition: 400ms;
 }
 
-button:hover {
-    background-color: #273c75;
-}
-
-button:hover #ico {
+button:hover .ico {
     transform: rotate(180deg);
 }
 
-button:active {
-    background-color: #40739e;
-}
 </style>
