@@ -25,13 +25,14 @@
             </td>
 
             <td>
-                <div class="table" :style="{'height':tableHeight + 'px', 'width':tableWidth + 'px'}" @click="selected = true" v-click-outside="onBlur">
+                <div class="table" :style="{'height':tableHeight + 'px', 'width':tableWidth + 'px'}" @click="selected = true" v-click-outside="onOutside">
                     <div v-if="selected" class="selected">
                         <p class="shape-text flex-item">Shape:</p>
-                        <input type="text" class="input-field  flex-item"
-                        :value="getDimentions()"
-                        @keydown.enter="updateSize">
-                        <button class="update-button flex-item" @click="updateSize">Update</button>
+                        <input type="text" class="input-field  flex-item no-drag"
+                        v-model="strDimentions"
+                        @keydown.enter="onEnter"
+                        @blur="onBlur">
+                        <button class="update-button flex-item no-drag" @click="onUpdateButton">Update</button>
                     </div>
                 </div>
             </td>
@@ -74,7 +75,9 @@ export default {
 
     data() {
         return {
-            selected: true
+            selected: true,
+            strDimentions: this.dimentions,
+            dimCopy: ""
         };
     },
 
@@ -90,9 +93,17 @@ export default {
             const height = Math.max(this.chairs[0].length, this.chairs[2].length, 1) * 170;
             return height;
         },
+
         tableWidth: function () {
             const width = Math.max(this.chairs[1].length, this.chairs[3].length, 1) * 170;
             return width;
+        },
+
+        dimentions: function() {
+            const chairs = this.chairs;
+            const dim = [chairs[0].length, chairs[1].length, chairs[2].length, chairs[3].length];
+
+            return dim.join('x');
         }
     },
 
@@ -117,21 +128,24 @@ export default {
             });
         },
 
-        getDimentions() {
-            const chairs = this.chairs;
-            const dim = [chairs[0].length, chairs[1].length, chairs[2].length, chairs[3].length];
-
-            return dim.join('x');
+        onBlur() {
+            this.dimCopy = this.strDimentions;
+            this.strDimentions = this.dimentions;
         },
 
-        onBlur(event) {
+        onOutside() {
             this.selected = false;
-            event.target.value = this.getDimentions();
         },
 
-        updateSize(event) {
-            console.log("ok");
-            const value = event.target.parentElement.querySelector(".input-field").value;
+        onEnter() {
+            this.updateSize(this.strDimentions);
+        },
+
+        onUpdateButton() {
+            this.updateSize((this.dimCopy !== "") ? this.dimCopy : this.strDimentions);
+        },
+
+        updateSize(value) {
             const dim = value.split('x').map((x) => parseInt(x));
 
             for (const [ind, row] of this.chairs.entries()) {
@@ -146,12 +160,15 @@ export default {
                 }
             }
 
+            this.dimCopy = "";
+            this.strDimentions = this.dimentions;
         }
 
 
     },
 
     mounted: function() {
+        this.strDimentions = this.dimentions;
         let dragMoveListener = (event) => {
             let target = event.target.parentElement.parentElement.parentElement;
 
@@ -174,12 +191,14 @@ export default {
         interact(".table")
         .draggable({
             inertia: true,
+            ignoreFrom: ".no-drag",
 
             modifiers: [modifiers],
 
             onmove: dragMoveListener
 
         });
+
     }
 }
 </script>
