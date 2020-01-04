@@ -1,5 +1,5 @@
 <template>
-    <table style="position:absolute;">
+    <table :style="{'position': 'absolute','transform': `translate(${translateX}px, ${translateY}px) scale(${scale})`}">
         <tr>
             <td/>
 
@@ -77,7 +77,9 @@ export default {
         return {
             selected: true,
             strDimentions: this.dimentions,
-            dimCopy: ""
+            dimCopy: "",
+            translateX: 0,
+            translateY: 0
         };
     },
 
@@ -85,6 +87,10 @@ export default {
         chairs: {
             type: Array,
             required: true
+        },
+        scale: {
+            type: Number,
+            default: 0.7
         }
     },
 
@@ -170,20 +176,8 @@ export default {
     mounted: function() {
         this.strDimentions = this.dimentions;
         let dragMoveListener = (event) => {
-            let target = event.target.parentElement.parentElement.parentElement;
-
-            // keep the dragged position in the data-x/data-y attributes
-            let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-            // translate the element
-            target.style.webkitTransform =
-                target.style.transform =
-                'translate(' + x + 'px, ' + y + 'px)';
-
-            // update the posiion attributes
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
+            this.translateX += event.dx;
+            this.translateY += event.dy;
         }
 
         const modifiers = this.getModifiers();

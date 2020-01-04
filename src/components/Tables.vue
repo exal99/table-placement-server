@@ -1,8 +1,9 @@
 <template>
-    <div id="table-background" class="background">
+    <div id="table-background" class="background" @wheel="zoom">
         <Table v-for="table in tables"
         :key="table.id"
         :chairs="table.chairs"
+        :scale="scale"
         />
     </div>
 </template>
@@ -22,7 +23,17 @@ export default {
                     id: 0,
                     chairs: [["a", "b"], ["c", ], ["d","e"], ["x"]]
                 }
-            ]
+            ],
+
+            scale: 0.7
+        }
+    },
+
+    methods: {
+        zoom(event) {
+            this.scale += event.deltaY * 0.01;
+
+            this.scale = Math.max(this.scale, 0.1);
         }
     }
 }
