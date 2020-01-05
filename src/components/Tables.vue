@@ -4,12 +4,15 @@
         :key="table.id"
         :chairs="table.chairs"
         :scale="scale"
+        :zoomPos="zoomPos"
         />
     </div>
 </template>
 
 <script>
 import Table from './Table.vue'
+import Vector from '../vector.js'
+import interact from 'interactjs'
 
 export default {
     name: "TablesVue",
@@ -22,19 +25,47 @@ export default {
                 {
                     id: 0,
                     chairs: [["a", "b"], ["c", ], ["d","e"], ["x"]]
-                }
+                },
+                //{
+                //    id:1,
+                //    chairs:[['a'],[],[],[]]
+               // }
             ],
 
-            scale: 0.7
+            scale: 0.7,
+            zoomPos: new Vector(0,0)
         }
     },
 
     methods: {
         zoom(event) {
-            this.scale += event.deltaY * 0.01;
-
+            this.scale -= event.deltaY * 0.01;
             this.scale = Math.max(this.scale, 0.1);
+
+            this.zoomPos = new Vector(event.clientX, event.clientY);
         }
+    },
+
+    mounted: function() {
+        let dragMoveListener = (event) => {
+            event.target.drag(event.dx, event.dy);
+        }
+
+
+        interact(".table-container")
+        .draggable({
+            inertia: true,
+            allowFrom: '.table',
+            ignoreFrom: ".no-drag",
+
+            modifiers: [interact.modifiers.restrictRect({
+                restriction: '#table-background',
+                endOnly: true
+            })],
+
+            onmove: dragMoveListener
+
+        });
     }
 }
 </script>

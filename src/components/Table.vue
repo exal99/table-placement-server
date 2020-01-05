@@ -1,5 +1,5 @@
 <template>
-    <table :style="{'position': 'absolute','transform': `translate(${translateX}px, ${translateY}px) scale(${scale})`}">
+    <table :style="{'position': 'absolute','transform': `translate(${pos.x}px, ${pos.y}px) scale(${scale})`}" ref="table-container" class="table-container">
         <tr>
             <td/>
 
@@ -25,7 +25,7 @@
             </td>
 
             <td>
-                <div class="table" :style="{'height':tableHeight + 'px', 'width':tableWidth + 'px'}" @click="selected = true" v-click-outside="onOutside">
+                <div class="table" :style="{'height':tableHeight + 'px', 'width':tableWidth + 'px'}" @click="selected = true" v-click-outside="onOutside" ref="table">
                     <div v-if="selected" class="selected">
                         <p class="shape-text flex-item">Shape:</p>
                         <input type="text" class="input-field  flex-item no-drag"
@@ -67,7 +67,7 @@
 <script>
 
 import Chair from './Chair.vue'
-import interact from 'interactjs'
+import Vector from '../vector.js'
 
 export default {
     name: "TableVue",
@@ -78,8 +78,8 @@ export default {
             selected: true,
             strDimentions: this.dimentions,
             dimCopy: "",
-            translateX: 0,
-            translateY: 0
+            pos: new Vector(0,0),
+            oldZoom: 1,
         };
     },
 
@@ -91,6 +91,10 @@ export default {
         scale: {
             type: Number,
             default: 0.7
+        },
+        zoomPos: {
+            type: Object,
+            required: true
         }
     },
 
@@ -114,26 +118,20 @@ export default {
     },
 
     watch: {
-        chairs: function() {
-            interact(".table").draggable({
-                modifiers: [this.getModifiers()]
-            });
+        zoomPos: {
+            handler: function(newZoomPos) {
+                const box = this.$refs["table-container"].getBoundingClientRect();
+                const pos = new Vector(box.x + box.width/2, box.y + box.height/2);
+                let dir = pos.sub(newZoomPos);
+                const scaleChange = this.scale/this.oldZoom;
+                this.pos = this.pos.add(dir.mult(scaleChange).sub(dir)); // (p-z) * s - (p-z)
+                this.oldZoom = this.scale;
+            },
+            deep: true
         }
     },
 
     methods: {
-        getModifiers() {
-            const left = -1/Math.max(this.chairs[1].length, this.chairs[3].length, 1);
-            const right = 1 - left;
-            const top = -1/Math.max(this.chairs[0].length, this.chairs[2].length, 1);
-            const bottom = 1 - top;
-            return interact.modifiers.restrictRect({
-                restriction: "#table-background",
-                endOnly: true,
-                elementRect: {left, right, top, bottom}
-            });
-        },
-
         onBlur() {
             this.dimCopy = this.strDimentions;
             this.strDimentions = this.dimentions;
@@ -175,23 +173,9 @@ export default {
 
     mounted: function() {
         this.strDimentions = this.dimentions;
-        let dragMoveListener = (event) => {
-            this.translateX += event.dx;
-            this.translateY += event.dy;
-        }
+        this.oldZoom = this.scale;
 
-        const modifiers = this.getModifiers();
-
-        interact(".table")
-        .draggable({
-            inertia: true,
-            ignoreFrom: ".no-drag",
-
-            modifiers: [modifiers],
-
-            onmove: dragMoveListener
-
-        });
+        this.$refs['table-container'].drag = (dx, dy) => this.pos = this.pos.add(new Vector(dx, dy));
 
     }
 }
