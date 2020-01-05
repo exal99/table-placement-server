@@ -24,7 +24,10 @@ export default {
             tables: [
                 {
                     id: 0,
-                    chairs: [["a", "b"], ["c", ], ["d","e"], ["x"]]
+                    chairs: [["a", "b"],
+                             ["c",],
+                             ["d", "e"],
+                             ["x"]]
                 },
                 //{
                 //    id:1,

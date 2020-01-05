@@ -6,8 +6,10 @@
             <td>
                 <div class="chair-row" style="flex-flox: row nowrap;">
                     <Chair v-for="[id, name] in chairs[1].entries()"
-                    :key="id"
-                    :name.sync="name" />
+                    :key="id + name"
+                    :name="name"
+                    :id="[1,id]"
+                    v-on:update:name="updateName"/>
                 </div>
             <td/>
 
@@ -18,8 +20,10 @@
             <td>
                 <div class="chair-row" style="flex-flow: column nowrap;">
                     <Chair v-for="[id, name] in chairs[0].entries()"
-                    :key="id"
-                    :name.sync="name" />
+                    :key="id + name"
+                    :name="name"
+                    :id="[0,id]"
+                    v-on:update:name="updateName"/>
                 </div>
 
             </td>
@@ -40,8 +44,10 @@
             <td>
                 <div class="chair-row" style="flex-flow: column nowrap;">
                     <Chair v-for="[id, name] in chairs[2].entries()"
-                    :key="id"
-                    :name.sync="name" />
+                    :key="id + name"
+                    :name="name"
+                    :id="[2,id]"
+                    v-on:update:name="updateName"/>
                 </div>
 
             </td>
@@ -53,8 +59,10 @@
             <td>
                 <div class="chair-row" style="flex-flow: row nowrap;">
                     <Chair v-for="[id, name] in chairs[3].entries()"
-                    :key="id"
-                    :name.sync="name" />
+                    :key="id + name"
+                    :name="name"
+                    :id="[3,id]"
+                    v-on:update:name="updateName"/>
                 </div>
             </td>
 
@@ -75,7 +83,7 @@ export default {
 
     data() {
         return {
-            selected: true,
+            selected: false,
             strDimentions: this.dimentions,
             dimCopy: "",
             pos: new Vector(0,0),
@@ -166,6 +174,10 @@ export default {
 
             this.dimCopy = "";
             this.strDimentions = this.dimentions;
+        },
+
+        updateName(event) {
+            this.chairs[event.id[0]][event.id[1]] = event.n;
         }
 
 
