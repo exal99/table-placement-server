@@ -1,4 +1,4 @@
-# test
+# Seating Plan Tool
 
 ## Project setup
 ```
