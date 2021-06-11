@@ -13,5 +13,5 @@ python-engineio==3.5.1
 python-socketio==3.1.2
 redis==3.2.1
 six==1.12.0
-websockets==7.0
+websockets==9.1
 Werkzeug==0.15.2
